@@ -6,7 +6,12 @@ const inventorySchema = new mongoose.Schema({
         unique: true, // Ensure the ID is unique
         required: true
     },
+
     name: {
+        type: String,
+        required: true
+    },
+    displayName:{
         type: String,
         required: true
     },

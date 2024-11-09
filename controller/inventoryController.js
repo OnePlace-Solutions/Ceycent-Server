@@ -22,6 +22,7 @@ const generateNextID = async () => {
 const addItem = async (req, res) => {
     // Validation
     await check('name').notEmpty().withMessage('Enter Name').run(req);
+    await check('displayName').notEmpty().withMessage('Enter Display Name').run(req);
     await check('tag').notEmpty().withMessage('Enter Tag').run(req);
     await check('costPrice').notEmpty().withMessage('Enter  Cost Price').run(req);
     await check('sellingPrice').notEmpty().withMessage('Enter  Selling Price').run(req);
@@ -73,6 +74,7 @@ const getAllItems = async (req, res) => {
 const updateItem = async (req, res) => {
     // Validate the inputs if needed
     await check('name').notEmpty().withMessage('Enter Name').run(req);
+    await check('displayName').notEmpty().withMessage('Enter Display Name').run(req);
     await check('tag').notEmpty().withMessage('Enter Tag').run(req);
     await check('costPrice').notEmpty().withMessage('Enter Cost Price').run(req);
     await check('sellingPrice').notEmpty().withMessage('Enter Selling Price').run(req);
