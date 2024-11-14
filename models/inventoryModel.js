@@ -13,7 +13,6 @@ const inventorySchema = new mongoose.Schema({
     },
     displayName:{
         type: String,
-        required: true
     },
     description: {
         type: String,

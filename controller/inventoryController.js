@@ -1,21 +1,17 @@
 const Inventory = require('../models/inventoryModel');
+const Counter = require('../models/CounterModel');
 const { check, validationResult } = require('express-validator');
 
 // Helper function to generate next ID
 const generateNextID = async () => {
-    const lastItem = await Inventory.findOne().sort({ createdAt: -1 }); // Get the last inserted item based on creation time
+    const counter = await Counter.findByIdAndUpdate(
+        { _id: 'inventoryId' }, // A specific identifier for your inventory ID sequence
+        { $inc: { sequence_value: 1 } },
+        { new: true, upsert: true } // Create the counter if it doesn't exist
+    );
 
-    if (!lastItem || !lastItem.id) {
-        return 'ID001'; // If no items exist, start with ID001
-    }
-
-    // Extract the number from the last ID and increment it
-    const lastIdNumber = parseInt(lastItem.id.slice(2), 10); // Remove 'ID' and convert to a number
-    const nextIdNumber = lastIdNumber + 1;
-
-    // Format the next ID (e.g., ID001, ID002)
-    const nextId = `ID${nextIdNumber.toString().padStart(3, '0')}`; // Ensure it's always 3 digits
-    return nextId;
+    const nextIdNumber = counter.sequence_value;
+    return `ID${nextIdNumber.toString().padStart(3, '0')}`;
 };
 
 // Add an item to the inventory
@@ -38,18 +34,32 @@ const addItem = async (req, res) => {
     }
 
     try {
-        // Generate the next custom ID
-        const nextId = await generateNextID();
+        let newItem;
+        let nextId;
 
-        // Create new inventory item with generated ID
-        const newItem = new Inventory({
-            id: nextId, // Assign the generated ID
-            ...req.body
-        });
+        for (let attempt = 0; attempt < 5; attempt++) { // Retry a few times if duplicate error occurs
+            try {
+                nextId = await generateNextID();
+                newItem = new Inventory({
+                    id: nextId,
+                    ...req.body
+                });
+                await newItem.save();
+                break; // Exit loop on success
+            } catch (err) {
+                if (err.code === 11000) {
+                    console.log(`Duplicate ID ${nextId}, retrying...`);
+                } else {
+                    throw err; // Non-duplicate error, re-throw
+                }
+            }
+        }
 
-        const result = await newItem.save();
+        if (!newItem) {
+            return res.status(500).json({ success: false, message: 'Failed to generate unique ID after multiple attempts.' });
+        }
 
-        res.status(201).json({ success: true, message: "New Item Added Successfully", data: result });
+        res.status(201).json({ success: true, message: "New Item Added Successfully", data: newItem });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
         console.log(err);
