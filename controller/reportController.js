@@ -9,18 +9,19 @@ const getMonthRange = (month, year) => {
     return { startOfMonth, endOfMonth };
 };
 
-// total sales with item names
+// total sales with item names (only completed orders)
 const totalSales = async (req, res) => {
     try {
         const { month, year } = req.query;
         const { startOfMonth, endOfMonth } = getMonthRange(month, year);
 
         const sales = await Sale.find({
-            createdAt: { $gte: startOfMonth, $lte: endOfMonth }
+            createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+            saleStatus: 'completed' // Filter for completed orders
         }).select('customers totalAmount createdAt items');
 
         const salesData = sales.map(sale => ({
-            customerName: sale.customers[0]?.cusName || 'N/A', // Handling potential undefined
+            customerName: sale.customers[0]?.cusName || 'N/A',
             totalAmount: sale.totalAmount,
             createdAt: sale.createdAt,
             itemNames: sale.items.map(item => item.name)
@@ -54,14 +55,15 @@ const totalExpenses = async (req, res) => {
     }
 };
 
-// total profit
+// total profit (only completed orders)
 const totalProfit = async (req, res) => {
     try {
         const { month, year } = req.query;
         const { startOfMonth, endOfMonth } = getMonthRange(month, year);
 
         const sales = await Sale.find({
-            createdAt: { $gte: startOfMonth, $lte: endOfMonth }
+            createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+            saleStatus: 'completed' // Filter for completed orders
         }).select('totalAmount');
 
         const expenses = await Expenses.find({
