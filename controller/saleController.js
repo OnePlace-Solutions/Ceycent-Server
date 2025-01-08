@@ -27,7 +27,7 @@ const createSale = async (req, res) => {
             ],
             items: items.map(item => ({
                 id: item.id, // Ensure this exists in the incoming request body
-                itemCode: item.itemCode,
+                code: item.code,
                 name: item.name,
                 sellingPrice: item.sellingPrice,
                 quantity: item.quantity,

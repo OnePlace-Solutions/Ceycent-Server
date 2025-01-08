@@ -19,7 +19,7 @@ const saleSchema = new mongoose.Schema({
     items: [
         {
             itemID: String,
-            itemCode: String,
+            code: String,
             name: String,
             sellingPrice: Number,
             quantity: Number,
