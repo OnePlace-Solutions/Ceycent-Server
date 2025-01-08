@@ -6,7 +6,10 @@ const inventorySchema = new mongoose.Schema({
         unique: true, // Ensure the ID is unique
         required: true
     },
-
+    itemCode: {
+        type: String, // Add this field
+        required: true // Make it required if necessary
+    },
     name: {
         type: String,
         required: true

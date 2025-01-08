@@ -26,6 +26,8 @@ const addItem = async (req, res) => {
     await check('supplier').notEmpty().withMessage('Enter Supplier').run(req);
     await check('quantity').notEmpty().withMessage('Enter Quantity').run(req);
     await check('status').notEmpty().withMessage('Enter Status').run(req);
+    await check('itemCode').notEmpty().withMessage('Enter Item Code').run(req);
+
 
     // Handle validation result
     const errors = validationResult(req);
@@ -42,6 +44,7 @@ const addItem = async (req, res) => {
                 nextId = await generateNextID();
                 newItem = new Inventory({
                     id: nextId,
+                    itemCode: req.body.itemCode,
                     ...req.body
                 });
                 await newItem.save();
