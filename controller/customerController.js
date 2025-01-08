@@ -26,11 +26,15 @@ const addNewCustomer = async (req, res) => {
         // Generate the next customer ID
         const cusID = await generateNextCustomerID();
 
-        if (!cusName || !cusEmail || !cusPhone1) {
-            return res.status(400).json({ status: "error", message: "All fields are required" });
+        // Ensure that 'cusName' and 'cusPhone1' are required
+        if (!cusName || !cusPhone1) {
+            return res.status(400).json({ status: "error", message: "Name and Primary Phone are required" });
         }
 
+        // Create a new customer instance
         const newCustomer = new Customer({ cusID, cusName, cusEmail, cusPhone1, cusPhone2, cusAddress });
+
+        // Save the new customer to the database
         await newCustomer.save();
 
         return res.status(201).json({ status: "success", message: "Customer added successfully", newCustomer });
@@ -39,6 +43,7 @@ const addNewCustomer = async (req, res) => {
         return res.status(500).json({ status: "error", message: err.message });
     }
 };
+
 
 
 // get all customers

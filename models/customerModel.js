@@ -14,9 +14,7 @@ const customerSchema = new mongoose.Schema({
     },
     cusEmail: {
         type: String,
-        required: true,
-        unique: true,
-        trim: true
+        // No "required" attribute, making it optional
     },
     cusPhone1: {
         type: String,
@@ -38,5 +36,7 @@ const customerSchema = new mongoose.Schema({
         default: Date.now
     }
 });
+
 const Customer = mongoose.model('Customer', customerSchema);
+
 module.exports = Customer;
